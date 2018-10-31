@@ -1,2 +1,2 @@
-# dive-into-containerd
-A gitbook named dive-into-containerd
+# studying-containerd-notes
+A gitbook named studying-containerd-notes
