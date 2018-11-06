@@ -441,6 +441,9 @@ path: containerd/services/tasks/local.go
     }
     
 
+### 总结
+tty情况下，runc和shim之间通过unix socket进行通信， 通过runc create --console-socket value 可以看出，此时stdout和stderr不区分，统一走socket; 而当non-tty的情况下，是通过父子进程之间的pipe进行通信的, stdout和stderr是有区分的。
+
 ### Pouch I/O设计
 ![image.png-79.5kB][1]
 
