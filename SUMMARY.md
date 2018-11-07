@@ -11,4 +11,8 @@
     * [ctr run流程](chapter3/section3.1.md)
     * [Container I/O](chapter3/section3.2.md)
     * [runc](chapter3/section3.3.md)
+* [镜像](chapter3/README.md)
+    * [image fetch](chapter4/section4.1.md)
+    * [image unpack](chapter4/section4.2.md)
+    * [snapshotter](chapter4/section4.3.md)
 
