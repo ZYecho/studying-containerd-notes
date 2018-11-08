@@ -25,7 +25,7 @@ path: https://github.com/opencontainers/distribution-spec/blob/master/spec.md
 
 然后根据manifests中包含的digest去获取每层layer的blob，通过API `GET /v2/<name>/blobs/<digest>`进行获取。
 
-值得注意在整个拉取过程中没有出现image id的用处，image id是docker的用法，image id和manifest中config的digest相同，本质上是image config的digest。
+值得注意在整个拉取过程中没有出现image id的用处，image id是docker的用法，image id和manifest中config的digest相同，本质上是image configuration JSON的digest。
 
 Docker-Content-Digest header：
 这个头部后边还需要用到，先放到这里了解一下。
