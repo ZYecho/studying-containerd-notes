@@ -56,7 +56,7 @@ https://blog.mobyproject.org/where-are-containerds-graph-drivers-145fc9b7255
 > EXT4 and XFS whereas snapshotting filesystems only run on volumes
 > formatted for them.
 
-快照类型的文件系统需要底层快设备提前format成对应的特定格式，不能直接运行在common filsystem上比如ext4等
+快照类型的文件系统需要底层块设备提前format成对应的特定格式，不能直接运行在common filsystem上比如ext4等
 
 目前支持的存储引擎有哪些？
 
