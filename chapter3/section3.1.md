@@ -146,60 +146,6 @@
     	return t, nil
     }
     
-    func WithStart(binary, address, daemonAddress, cgroup string, debug bool, exitHandler func()) Opt {
-	return func(ctx context.Context, config shim.Config) (_ shimapi.ShimService, _ io.Closer, err error) {
-		socket, err := newSocket(address)
-		if err != nil {
-			return nil, nil, err
-		}
-		defer socket.Close()
-		f, err := socket.File()
-		if err != nil {
-			return nil, nil, errors.Wrapf(err, "failed to get fd for socket %s", address)
-		}
-		defer f.Close()
-
-		cmd, err := newCommand(binary, daemonAddress, debug, config, f)
-		if err != nil {
-			return nil, nil, err
-		}
-		if err := cmd.Start(); err != nil {
-			return nil, nil, errors.Wrapf(err, "failed to start shim")
-		}
-		defer func() {
-			if err != nil {
-				cmd.Process.Kill()
-			}
-		}()
-		go func() {
-			cmd.Wait()
-			exitHandler()
-		}()
-		log.G(ctx).WithFields(logrus.Fields{
-			"pid":     cmd.Process.Pid,
-			"address": address,
-			"debug":   debug,
-		}).Infof("shim %s started", binary)
-		// set shim in cgroup if it is provided
-		if cgroup != "" {
-			if err := setCgroup(cgroup, cmd); err != nil {
-				return nil, nil, err
-			}
-			log.G(ctx).WithFields(logrus.Fields{
-				"pid":     cmd.Process.Pid,
-				"address": address,
-			}).Infof("shim placed in cgroup %s", cgroup)
-		}
-		if err = sys.SetOOMScore(cmd.Process.Pid, sys.OOMScoreMaxKillable); err != nil {
-			return nil, nil, errors.Wrap(err, "failed to set OOM Score on shim")
-		}
-		c, clo, err := WithConnect(address, func() {})(ctx, config)
-		if err != nil {
-			return nil, nil, errors.Wrap(err, "failed to connect")
-		}
-		return c, clo, nil
-	}
-    }
 
     func WithStart(binary, address, daemonAddress, cgroup string, debug bool, exitHandler func()) Opt {
     	return func(ctx context.Context, config shim.Config) (_ shimapi.ShimService, _ io.Closer, err error) {
@@ -395,7 +341,14 @@ containerd daemon看起来只是一层比较薄的逻辑。
 containerd-shim则相当于是容器物理进程，比如会在容器物理挂掉后接管它，避免它被init进程监管等。
 具体的执行还是都交给了底层的runc来完成。
 
+流程图如下所示
+![未命名文件.png-34.3kB][1]
+
+
 ### 参考
 https://blog.csdn.net/zhonglinzhang/article/details/76615127
 https://blog.csdn.net/zhonglinzhang/article/category/3271199
 https://blog.csdn.net/zhonglinzhang/article/details/76683925
+
+
+  [1]: http://static.zybuluo.com/myecho/r5rshm7wg9ahrv56cqk07zy5/%E6%9C%AA%E5%91%BD%E5%90%8D%E6%96%87%E4%BB%B6.png

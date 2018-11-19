@@ -15,6 +15,7 @@
     * [image fetch](chapter4/section4.1.md)
     * [image unpack](chapter4/section4.2.md)
     * [snapshotter](chapter4/section4.3.md)
+    * [pouch commit实现](chapter4/section4.4.md)
 * [存储](chapter5/README.md)
     * [overlay](chapter5/section5.1.md)
     * [btrfs](chapter5/section5.2.md)

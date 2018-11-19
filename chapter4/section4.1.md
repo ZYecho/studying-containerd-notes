@@ -158,6 +158,7 @@ path: containerd/containerd/client.go
     
     	is := c.ImageService()
     	for {
+                //调用images服务存储镜像元数据
     		if created, err := is.Create(ctx, img); err != nil {
     			if !errdefs.IsAlreadyExists(err) {
     				return images.Image{}, err
@@ -218,7 +219,7 @@ path: containerd/containerd/client.go
     			return "", ocispec.Descriptor{}, err
     		}
             
-            //首先尝试registry-1.docker.io/v2/library/ubuntu/manifest/sha256:xxx
+                //首先尝试registry-1.docker.io/v2/library/ubuntu/manifest/sha256:xxx
     		// turns out, we have a valid digest, make a url.
     		urls = append(urls, fetcher.url("manifests", dgst.String()))
     
@@ -299,7 +300,7 @@ path: containerd/containerd/client.go
     		}
     
     		desc := ocispec.Descriptor{
-    		    //可以看到这三个值都是从头部中拿到的
+    		        //可以看到这三个值都是从头部中拿到的
     			Digest:    dgst,
     			//可能为application/vnd.docker.distribution.manifest.list.v2+json, 对应着不同平台的多个image, containerd在向registry下载manifest list之后，再去选择下载其中的某个平台的镜像。
     			MediaType: resp.Header.Get("Content-Type"), // need to strip disposition?
@@ -318,7 +319,7 @@ path: containerd/containerd/client.go
     	eg, ctx := errgroup.WithContext(ctx)
     	for _, desc := range descs {
     		desc := desc
-    
+                //一个协程池，对于不同的descriptor来说下载是并发的
     		eg.Go(func() error {
     			desc := desc
     
@@ -331,7 +332,7 @@ path: containerd/containerd/client.go
     			}
     
     			if len(children) > 0 {
-    			    // 本质上是个dfs过程
+    			        // 本质上是个dfs过程
     				return Dispatch(ctx, handler, children...)
     			}
     
@@ -408,9 +409,9 @@ path: containerd/containerd/remotes/docker/fetcher.go
     			"digest": desc.Digest,
     		},
     	))
-       // 如果是manifest的话首先是*/manifests/*
-       // 其次是走*/blobs/*即可
-       // 如果不是manifest的话直接走*/blobs/*即可
+        // 如果是manifest的话首先是*/manifests/*
+        // 其次是走*/blobs/*即可
+        // 如果不是manifest的话直接走*/blobs/*即可
     	urls, err := r.getV2URLPaths(ctx, desc)
     	if err != nil {
     		return nil, err

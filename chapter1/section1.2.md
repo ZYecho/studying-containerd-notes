@@ -9,7 +9,7 @@
     			serverC = make(chan *server.Server, 1)
     			ctx     = gocontext.Background()
     			config  = defaultConfig()
-    			默认的 config root 为 /var/lib/containerd
+    			//默认的 config root 为 /var/lib/containerd
     		)
     
     		done := handleSignals(ctx, signals, serverC)
@@ -110,7 +110,7 @@
     	if err := apply(ctx, config); err != nil {
     		return nil, err
     	}
-    	//加载插件，比如snapshottor, metaStore,content等，但是其中还有个proxyPlugin，不知道干啥的，有待补充？？？
+    	//加载插件，比如snapshottor, metaStore,content等，但是其中还有个proxyPlugin，看起来是为某些服务提供的代理
     	plugins, err := LoadPlugins(ctx, config)
     	if err != nil {
     		return nil, err
@@ -237,3 +237,10 @@
     //可以看到containerd的snapshottor机制也是通过底层的这些storage driver实现的。
     
 更详细的plugin介绍在后边涉及到的时候再深入研究。
+
+### 总结-流程图
+![应用添加模块.png-12.2kB][1]
+
+
+
+  [1]: http://static.zybuluo.com/myecho/tz2m8o9i6ppbp8kvrj1r56q7/%E5%BA%94%E7%94%A8%E6%B7%BB%E5%8A%A0%E6%A8%A1%E5%9D%97.png
