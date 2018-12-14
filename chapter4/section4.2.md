@@ -131,7 +131,7 @@ https://github.com/ZYecho/image-spec/blob/master/image-layout.md
 ### 流程解析
     //snapshotterName default为overlay
     func (i *image) Unpack(ctx context.Context, snapshotterName string) error {
-        // lease的意义？
+        // lease的意义？应该是和GC相关
     	ctx, done, err := i.client.WithLease(ctx)
     	if err != nil {
     		return err
@@ -246,7 +246,7 @@ path: containerd/containerd/rootfs/apply.go
     		key = fmt.Sprintf("extract-%s %s", uniquePart(), chainID)
     
     		// Prepare snapshot with from parent, label as root
-    		// step1
+    		// step1 获取到经过COW之后的可挂载的mounts(type可能为bind brtfs等，目录和moby存储目录类似)
     		mounts, err = sn.Prepare(ctx, key, parent.String(), opts...)
     		if err != nil {
     			if errdefs.IsNotFound(err) && len(layers) > 1 {
@@ -282,7 +282,7 @@ path: containerd/containerd/rootfs/apply.go
     	}()
         
         // step2, Blob依然是tar+gzip的形式
-        // 作用看起来是会涉及到uncompress然后mount上去挂载点，转化成一个oci image的desc
+        // 先将mounts挂载到一个temp dir上并且applyDiff，要明白DIffs在mount的path原有挂载点目录里也是可见的，和temp dir在哪没有关系
     	diff, err = a.Apply(ctx, layer.Blob, mounts)
     	if err != nil {
     		err = errors.Wrapf(err, "failed to extract layer %s", layer.Diff.Digest)
